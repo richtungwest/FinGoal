@@ -393,7 +393,7 @@ function renderLedger() {
     <div class="card"><h3>家庭账本</h3>
       <div class="field"><label>账本名称</label><input id="f-ledgername" value="${esc(s.ledgerName)}"></div>
       <div class="field"><label>成员名（本机）</label><input id="f-member" value="${esc(s.memberName)}"><div class="hint">记账时自动标记是谁记的</div></div>
-      <div class="field"><label>账本 ID（共享码）</label><input id="f-ledgerid" value="${esc(s.ledgerId)}"><div class="hint">加入已有账本时粘贴另一台的 ID；留空自动新建</div></div>
+      <div class="field"><label>账本 ID（共享码）</label><input id="f-ledgerid" value="${esc(s.ledgerId)}"><div class="hint">填你已有的共享码（如 111）与其他设备同步；留空保持当前值</div></div>
       ${s.ledgerId
         ? `<div class="primary-dist" style="margin-top:6px">🔗 当前共享码：<b style="user-select:all;word-break:break-all">${esc(s.ledgerId)}</b><br><button class="btn ghost" style="width:auto;padding:6px 12px;font-size:12px;margin-top:6px" data-act="copy-id">📋 复制共享码</button></div>`
         : '<div class="hint">保存设置后自动生成共享码，可在其他设备填入加入同一账本</div>'}
@@ -612,8 +612,10 @@ function doSaveLedger() {
   s.memberName = $('#f-member').value.trim() || '我';
   s.r2AccessKey = $('#f-ak').value.trim();
   s.r2SecretKey = $('#f-sk').value.trim();
-  if (!s.ledgerId) s.ledgerId = newId || crypto.randomUUID();
-  save(); render(); toast('已保存 ✓');
+  // 账本 ID：只采用用户输入的值；留空则保持当前值，绝不自动生成
+  if (newId) s.ledgerId = newId;
+  save(); render();
+  toast(s.ledgerId ? '已保存 ✓' : '已保存（未设置账本 ID，将无法云同步）');
 }
 async function doSyncUp() { try { await syncToCloud(); } catch (err) { toast(err.message); } }
 async function doSyncDown() { try { await syncFromCloud(); } catch (err) { toast(err.message); } }
