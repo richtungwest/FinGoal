@@ -1,0 +1,21 @@
+{
+  "name": "FinGoal",
+  "identifier": "com.goalfinance.fingoal-source",
+  "sourceURL": "https://raw.githubusercontent.com/richtungwest/FinGoal/main/ipa/apps.json",
+  "apps": [
+    {
+      "name": "FinGoal",
+      "bundleIdentifier": "com.goalfinance.app.ios",
+      "developerName": "RichtungWest",
+      "subtitle": "目标驱动的个人财务",
+      "version": "1.0.0",
+      "versionDate": "2026-08-22T00:00:00Z",
+      "downloadURL": "https://raw.githubusercontent.com/richtungwest/FinGoal/main/ipa/FinGoal.ipa",
+      "localizedDescription": "先定目标再管钱：目标进度、记账、月度报告、家庭账本云同步（与安卓版数据互通）。",
+      "iconURL": "https://raw.githubusercontent.com/richtungwest/FinGoal/main/ipa/FinGoal-icon.png",
+      "tintColor": "#0E7C66",
+      "size": 275153
+    }
+  ],
+  "news": []
+}
