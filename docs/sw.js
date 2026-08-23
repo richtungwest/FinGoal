@@ -1,5 +1,5 @@
 'use strict';
-const CACHE = 'fingoal-v1';
+const CACHE = 'fingoal-v2';
 const FILES = ['/', './index.html', './style.css', './app.js', './manifest.json', './icon.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
