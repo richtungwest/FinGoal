@@ -12,6 +12,19 @@ const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
 const pad = n => String(n).padStart(2, '0');
 let toastTimer = null;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.add('hidden'), 2600); }
+function copyText(text) {
+  const done = () => toast('共享码已复制 ✓');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) { toast('复制失败，请长按手动复制'); }
+  document.body.removeChild(ta);
+}
 
 // ───────────────────────── 数据状态 ─────────────────────────
 const DEFAULT_CATEGORIES = [
@@ -381,6 +394,9 @@ function renderLedger() {
       <div class="field"><label>账本名称</label><input id="f-ledgername" value="${esc(s.ledgerName)}"></div>
       <div class="field"><label>成员名（本机）</label><input id="f-member" value="${esc(s.memberName)}"><div class="hint">记账时自动标记是谁记的</div></div>
       <div class="field"><label>账本 ID（共享码）</label><input id="f-ledgerid" value="${esc(s.ledgerId)}"><div class="hint">加入已有账本时粘贴另一台的 ID；留空自动新建</div></div>
+      ${s.ledgerId
+        ? `<div class="primary-dist" style="margin-top:6px">🔗 当前共享码：<b style="user-select:all;word-break:break-all">${esc(s.ledgerId)}</b><br><button class="btn ghost" style="width:auto;padding:6px 12px;font-size:12px;margin-top:6px" data-act="copy-id">📋 复制共享码</button></div>`
+        : '<div class="hint">保存设置后自动生成共享码，可在其他设备填入加入同一账本</div>'}
     </div>
     <div class="card"><h3>云同步（Cloudflare R2）</h3>
       <div class="field"><label>R2 Access Key</label><input id="f-ak" value="${esc(s.r2AccessKey)}"></div>
@@ -497,6 +513,7 @@ document.addEventListener('click', e => {
   const id = (el.dataset.id === '' || el.dataset.id == null) ? null : Number(el.dataset.id);
   if (act === 'close-sheet') return closeSheet();
   if (act === 'set-theme') { S.settings.themeStyle = el.dataset.theme; save(); applyTheme(); document.querySelectorAll('.theme-row').forEach(r => r.classList.toggle('on', r.dataset.theme === el.dataset.theme)); render(); return; }
+  if (act === 'copy-id') { copyText(S.settings.ledgerId || ''); return; }
   if (act === 'save-txn') return doSaveTxn(id);
   if (act === 'save-goal') return doSaveGoal(id);
   if (act === 'save-plan') return doSavePlan();
