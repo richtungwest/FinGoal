@@ -211,9 +211,10 @@ const THEMES = [
   { key: 'MIDNIGHT_GOLD', label: '午夜鎏金', emoji: '🌙', light: '#9A741F', dark: '#D4AF37' },
   { key: 'MISTED_BLUE', label: '雾蓝', emoji: '🌫️', light: '#5E7FA3', dark: '#8AA6C4' },
 ];
+const THEME_CSS = { MINIMAL: 'minimal', MIDNIGHT_GOLD: 'midnight', MISTED_BLUE: 'misted' };
 function applyTheme() {
   const t = S.settings.themeStyle || 'MINIMAL';
-  document.documentElement.setAttribute('data-theme', t.toLowerCase());
+  document.documentElement.setAttribute('data-theme', THEME_CSS[t] || 'minimal');
   document.querySelector('meta[name="theme-color"]').content = t === 'MIDNIGHT_GOLD' ? '#0A1326' : t === 'MISTED_BLUE' ? '#0D1620' : '#0E7C66';
 }
 
@@ -488,10 +489,12 @@ function sheetGoalDetail(id) {
 
 // ───────────────────────── 事件（事件委托） ─────────────────────────
 document.addEventListener('click', e => {
+  const nav = e.target.closest('[data-view]');
+  if (nav) { setView(nav.dataset.view); return; }
   const el = e.target.closest('[data-act]');
   if (!el) return;
   const act = el.dataset.act;
-  const id = el.dataset.id != null ? Number(el.dataset.id) : null;
+  const id = (el.dataset.id === '' || el.dataset.id == null) ? null : Number(el.dataset.id);
   if (act === 'close-sheet') return closeSheet();
   if (act === 'set-theme') { S.settings.themeStyle = el.dataset.theme; save(); applyTheme(); document.querySelectorAll('.theme-row').forEach(r => r.classList.toggle('on', r.dataset.theme === el.dataset.theme)); render(); return; }
   if (act === 'save-txn') return doSaveTxn(id);
